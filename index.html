@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>แบบสอบถามหานพลักษณ์</title>
+  <title>Find Your Enneagram</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
@@ -13,15 +13,14 @@
     }
 
     .question { 
-      margin-bottom: 15px; 
-      text-align: left;
+      margin-bottom: 40px; 
+      text-align: center;
     }
 
     #result-page {
       display: none;
     }
 
-    /* กล่องผลลัพธ์ */
     .result-container {
       display: inline-block;
       background-color: #fff;
@@ -57,19 +56,55 @@
       font-size: 16px;
       cursor: pointer;
     }
+
+    /* ปรับ radio ให้วงกลมต่างสี/ขนาด */
+    .radio-group {
+      display: flex;    
+      justify-content: center;   
+      gap: 15px;           
+      align-items: center;
+      margin-top: 5px;
+    }
+
+    .radio-group label {
+      display: inline-flex;
+      flex-direction: column; 
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .radio-group input[type="radio"] {
+      appearance: none;
+      -webkit-appearance: none;
+      border-radius: 50%;
+      border: 2px solid #ccc;
+      cursor: pointer;
+      margin-bottom: 5px;
+    }
+
+    /* ขนาด + สีแตกต่างกัน */
+    .radio-0 input { width: 35px; height: 35px; background-color: #ff6666; }
+    .radio-1 input { width: 30px; height: 30px; background-color: #fff568; }
+    .radio-2 input { width: 25px; height: 25px; background-color: #d7edd7; }
+    .radio-3 input { width: 30px; height: 30px; background-color: #a8db6c; }
+    .radio-4 input { width: 35px; height: 35px; background-color: #186b01; }
+
+    .radio-group input:checked {
+      border: 3px solid #000;
+    }
   </style>
 </head>
 <body>
   <!-- หน้าแบบสอบถาม -->
   <div id="quiz-page">
-    <h1>แบบสอบถามหานพลักษณ์</h1>
+    <h1>Find Your Enneagram</h1>
     <form id="quizForm"></form>
     <button type="submit" form="quizForm">ส่งคำตอบ</button>
   </div>
 
   <!-- หน้าผลลัพธ์ -->
   <div id="result-page">
-    <div id="result-text"></div> <!-- ข้อความผลลัพธ์ข้างบน -->
+    <div id="result-text"></div>
     <div class="result-container">
       <canvas id="chart" width="200" height="200"></canvas>
       <img class="result-img" id="result-image" src="" alt="ผลลัพธ์">
@@ -80,50 +115,50 @@
     const form = document.getElementById("quizForm");
 
     const questions = [
-    "คุณขาดความยืดหยุ่นกับตัวเอง", 
-    "คุณกลัวที่จะทำผิดพลาด", 
-    "คุณพยายามที่จะพิสูจน์ตัวเอง", 
-    "คุณมักมีแผนให้กับสิ่งต่างๆ", 
+      "คุณขาดความยืดหยุ่นกับตัวเอง", 
+      "คุณกลัวที่จะทำผิดพลาด", 
+      "คุณพยายามที่จะพิสูจน์ตัวเอง", 
+      "คุณมักมีแผนให้กับสิ่งต่างๆ", 
 
-    "คุณมักให้ความช่วยเหลือคนอื่นเสมอ", 
-    "คุณกลัวว่าคุณจะไม่เป็นที่ยอมรับ", 
-    "คุณมันไม่รู้ความต้องการของตัวเอง", 
-    "คุณต้องการเป็นคนสำคัญของคนอื่น", 
+      "คุณมักให้ความช่วยเหลือคนอื่นเสมอ", 
+      "คุณกลัวว่าคุณจะไม่เป็นที่ยอมรับ", 
+      "คุณมันไม่รู้ความต้องการของตัวเอง", 
+      "คุณต้องการเป็นคนสำคัญของคนอื่น", 
 
-    "คุณชอบแข่งขัน", 
-    "คุณมักไม่สนใจความรู้สึกผู้อื่น", 
-    "คุณกลัวว่าตัวเองจะเป็นคนไม่มีคุณค่า", 
-    "คุณต้องการที่จะได้รับความสำคัญจากผู้อื่น", 
+      "คุณชอบแข่งขัน", 
+      "คุณมักไม่สนใจความรู้สึกผู้อื่น", 
+      "คุณกลัวว่าตัวเองจะเป็นคนไม่มีคุณค่า", 
+      "คุณต้องการที่จะได้รับความสำคัญจากผู้อื่น", 
 
-    "คุณใช้อารมณ์ในการตัดสินใจมากกว่าเหตุผล", 
-    "คุณมักคาดเดาได้ยาก", 
-    "คุณกลัวการถูกหลงลืม", 
-    "คุณมีความอ่อนไหวต่อสิ่งรอบตัว", 
+      "คุณใช้อารมณ์ในการตัดสินใจมากกว่าเหตุผล", 
+      "คุณมักคาดเดาได้ยาก", 
+      "คุณกลัวการถูกหลงลืม", 
+      "คุณมีความอ่อนไหวต่อสิ่งรอบตัว", 
 
-    "คุณใช้เหตุผลมากกว่าอารมณ์", 
-    "คุณเป็นคนช่างสังเกตมีไหวพริบ", 
-    "คุณชอบความเป็นส่วนตัว", 
-    "คุณกลัวจะเป็นคนไร้ความสามารถ", 
+      "คุณใช้เหตุผลมากกว่าอารมณ์", 
+      "คุณเป็นคนช่างสังเกตมีไหวพริบ", 
+      "คุณชอบความเป็นส่วนตัว", 
+      "คุณกลัวจะเป็นคนไร้ความสามารถ", 
 
-    "คุณมักคาดการณ์สถานการณ์เที่ชิงลบล่วงหน้า", 
-    "คุณมักโหยหาความรู้สึกมั่นคงปลอดภัยอยู่ตลอดเวลา", 
-    "คุณมองว่าปัญหาคือจุดเริ่มต้นการเรียนรู้", 
-    "คุณกลัวที่จะไม่ได้รับการสนับสนุนและคำแนะนำ", 
+      "คุณมักคาดการณ์สถานการณ์เที่ชิงลบล่วงหน้า", 
+      "คุณมักโหยหาความรู้สึกมั่นคงปลอดภัยอยู่ตลอดเวลา", 
+      "คุณมองว่าปัญหาคือจุดเริ่มต้นการเรียนรู้", 
+      "คุณกลัวที่จะไม่ได้รับการสนับสนุนและคำแนะนำ", 
 
-    "คุณมักชอบค้นหาประสบการณ์ใหม่ๆ", 
-    "คุณมักผัดวันประกันพรุ่ง", 
-    "คุณให้ความสำคัญกับอนาคตมากจนไม่ได้ใส่ใจสิ่งที่เกิดขึ้นในปัจจุบัน", 
-    "คุณวิตกกังลเกี่ยวกับการถูกกันออกจากสังคมหรือบุคคลรอบนอก", 
+      "คุณมักชอบค้นหาประสบการณ์ใหม่ๆ", 
+      "คุณมักผัดวันประกันพรุ่ง", 
+      "คุณให้ความสำคัญกับอนาคตมากจนไม่ได้ใส่ใจสิ่งที่เกิดขึ้นในปัจจุบัน", 
+      "คุณวิตกกังลเกี่ยวกับการถูกกันออกจากสังคมหรือบุคคลรอบนอก", 
 
-    "คุณไม่ชอบที่จะถูกควบคุม", 
-    "คุณมีความรับผิดชอบสูง", 
-    "คุณชอบที่จะเป็นผู้นำมากกว่าผู้ตาม", 
-    "คุณต้องการปกป้องความยุติธรรม", 
+      "คุณไม่ชอบที่จะถูกควบคุม", 
+      "คุณมีความรับผิดชอบสูง", 
+      "คุณชอบที่จะเป็นผู้นำมากกว่าผู้ตาม", 
+      "คุณต้องการปกป้องความยุติธรรม", 
 
-    "คุณใส่ใจความรู้สึกของคนอื่นจนละเลยความรู้สึกของตัวเอง", 
-    "คุณรักความสามัคคี", 
-    "คุณกลัวการสูญเสีย", 
-    "คุณมักจะหลีกเลี่ยงความขัดแย้ง"
+      "คุณใส่ใจความรู้สึกของคนอื่นจนละเลยความรู้สึกของตัวเอง", 
+      "คุณรักความสามัคคี", 
+      "คุณกลัวการสูญเสีย", 
+      "คุณมักจะหลีกเลี่ยงความขัดแย้ง"
     ];
 
     const images = [
@@ -137,13 +172,20 @@
       const div = document.createElement("div");
       div.className = "question";
       div.innerHTML = `<p>${i + 1}. ${questions[i]}</p>`;
-      for (let score = 0; score <= 5; score++) {
-        div.innerHTML += `
-          <label>
-            <input type="radio" name="q${i + 1}" value="${score}" required> ${score}
-          </label>
+      
+      const radioGroup = document.createElement("div");
+      radioGroup.className = "radio-group";
+      
+      for (let score = 0; score <= 4; score++) {
+        const label = document.createElement("label");
+        label.className = `radio-${score}`;
+        label.innerHTML = `
+          <input type="radio" name="q${i + 1}" value="${score}" required>
+          <span>${score}</span>
         `;
+        radioGroup.appendChild(label);
       }
+      div.appendChild(radioGroup);
       form.appendChild(div);
     }
 
@@ -165,14 +207,11 @@
       document.getElementById("quiz-page").style.display = "none";
       document.getElementById("result-page").style.display = "block";
 
-      // ข้อความข้างบนสุด
       document.getElementById("result-text").textContent = `คุณเป็นคนลักษณ์ ${maxIndex + 1}`;
 
-      // แสดงรูปภาพ
       document.getElementById("result-image").src = images[maxIndex];
       document.getElementById("result-image").alt = `ผลลัพธ์ประเภทที่ ${maxIndex+1}`;
 
-      // วาดกราฟวงกลม
       const ctx = document.getElementById("chart").getContext("2d");
       new Chart(ctx, {
         type: "pie",
