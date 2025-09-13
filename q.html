@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>แบบสอบถามหานพลักษณ์</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      text-align: center;
+      background-color: #f9f9f9;
+    }
+
+    .question { 
+      margin-bottom: 15px; 
+      text-align: left;
+    }
+
+    #result-page {
+      display: none;
+    }
+
+    /* กล่องผลลัพธ์ */
+    .result-container {
+      display: inline-block;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+
+    canvas#chart {
+      display: block;
+      margin: 0 auto;
+    }
+
+    img.result-img {
+      max-width: 100%;
+      height: auto;
+      margin-top: 20px;
+      border-radius: 10px;
+    }
+
+    #result-text {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <!-- หน้าแบบสอบถาม -->
+  <div id="quiz-page">
+    <h1>แบบสอบถามหานพลักษณ์</h1>
+    <form id="quizForm"></form>
+    <button type="submit" form="quizForm">ส่งคำตอบ</button>
+  </div>
+
+  <!-- หน้าผลลัพธ์ -->
+  <div id="result-page">
+    <div id="result-text"></div> <!-- ข้อความผลลัพธ์ข้างบน -->
+    <div class="result-container">
+      <canvas id="chart" width="200" height="200"></canvas>
+      <img class="result-img" id="result-image" src="" alt="ผลลัพธ์">
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("quizForm");
+
+    const questions = [
+    "คุณขาดความยืดหยุ่นกับตัวเอง", 
+    "คุณกลัวที่จะทำผิดพลาด", 
+    "คุณพยายามที่จะพิสูจน์ตัวเอง", 
+    "คุณมักมีแผนให้กับสิ่งต่างๆ", 
+
+    "คุณมักให้ความช่วยเหลือคนอื่นเสมอ", 
+    "คุณกลัวว่าคุณจะไม่เป็นที่ยอมรับ", 
+    "คุณมันไม่รู้ความต้องการของตัวเอง", 
+    "คุณต้องการเป็นคนสำคัญของคนอื่น", 
+
+    "คุณชอบแข่งขัน", 
+    "คุณมักไม่สนใจความรู้สึกผู้อื่น", 
+    "คุณกลัวว่าตัวเองจะเป็นคนไม่มีคุณค่า", 
+    "คุณต้องการที่จะได้รับความสำคัญจากผู้อื่น", 
+
+    "คุณใช้อารมณ์ในการตัดสินใจมากกว่าเหตุผล", 
+    "คุณมักคาดเดาได้ยาก", 
+    "คุณกลัวการถูกหลงลืม", 
+    "คุณมีความอ่อนไหวต่อสิ่งรอบตัว", 
+
+    "คุณใช้เหตุผลมากกว่าอารมณ์", 
+    "คุณเป็นคนช่างสังเกตมีไหวพริบ", 
+    "คุณชอบความเป็นส่วนตัว", 
+    "คุณกลัวจะเป็นคนไร้ความสามารถ", 
+
+    "คุณมักคาดการณ์สถานการณ์เที่ชิงลบล่วงหน้า", 
+    "คุณมักโหยหาความรู้สึกมั่นคงปลอดภัยอยู่ตลอดเวลา", 
+    "คุณมองว่าปัญหาคือจุดเริ่มต้นการเรียนรู้", 
+    "คุณกลัวที่จะไม่ได้รับการสนับสนุนและคำแนะนำ", 
+
+    "คุณมักชอบค้นหาประสบการณ์ใหม่ๆ", 
+    "คุณมักผัดวันประกันพรุ่ง", 
+    "คุณให้ความสำคัญกับอนาคตมากจนไม่ได้ใส่ใจสิ่งที่เกิดขึ้นในปัจจุบัน", 
+    "คุณวิตกกังลเกี่ยวกับการถูกกันออกจากสังคมหรือบุคคลรอบนอก", 
+
+    "คุณไม่ชอบที่จะถูกควบคุม", 
+    "คุณมีความรับผิดชอบสูง", 
+    "คุณชอบที่จะเป็นผู้นำมากกว่าผู้ตาม", 
+    "คุณต้องการปกป้องความยุติธรรม", 
+
+    "คุณใส่ใจความรู้สึกของคนอื่นจนละเลยความรู้สึกของตัวเอง", 
+    "คุณรักความสามัคคี", 
+    "คุณกลัวการสูญเสีย", 
+    "คุณมักจะหลีกเลี่ยงความขัดแย้ง"
+    ];
+
+    const images = [
+      "images/type1.png","images/type2.png","images/type3.png",
+      "images/type4.png","images/type5.png","images/type6.png",
+      "images/type7.png","images/type8.png","images/type9.png"
+    ];
+
+    // สร้างฟอร์มคำถาม
+    for (let i = 0; i < questions.length; i++) {
+      const div = document.createElement("div");
+      div.className = "question";
+      div.innerHTML = `<p>${i + 1}. ${questions[i]}</p>`;
+      for (let score = 0; score <= 5; score++) {
+        div.innerHTML += `
+          <label>
+            <input type="radio" name="q${i + 1}" value="${score}" required> ${score}
+          </label>
+        `;
+      }
+      form.appendChild(div);
+    }
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      const formData = new FormData(form);
+
+      let categories = new Array(9).fill(0);
+
+      for (let i = 1; i <= 36; i++) {
+        const score = parseInt(formData.get("q" + i));
+        const categoryIndex = Math.floor((i - 1) / 4);
+        categories[categoryIndex] += score;
+      }
+
+      let maxScore = Math.max(...categories);
+      let maxIndex = categories.indexOf(maxScore);
+
+      document.getElementById("quiz-page").style.display = "none";
+      document.getElementById("result-page").style.display = "block";
+
+      // ข้อความข้างบนสุด
+      document.getElementById("result-text").textContent = `คุณเป็นคนลักษณ์ ${maxIndex + 1}`;
+
+      // แสดงรูปภาพ
+      document.getElementById("result-image").src = images[maxIndex];
+      document.getElementById("result-image").alt = `ผลลัพธ์ประเภทที่ ${maxIndex+1}`;
+
+      // วาดกราฟวงกลม
+      const ctx = document.getElementById("chart").getContext("2d");
+      new Chart(ctx, {
+        type: "pie",
+        data: {
+          labels: [
+            "ลักษณ์ที่ 1","ลักษณ์ที่ 2","ลักษณ์ที่ 3",
+            "ลักษณ์ที่ 4","ลักษณ์ที่ 5","ลักษณ์ที่ 6",
+            "ลักษณ์ที่ 7","ลักษณ์ที่ 8","ลักษณ์ที่ 9"
+          ],
+          datasets: [{
+            data: categories,
+            backgroundColor: [
+              "#FF6384","#36A2EB","#FFCE56",
+              "#4BC0C0","#9966FF","#FF9F40",
+              "#C9CBCF","#8BC34A","#E91E63"
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: { font: { size: 8 }, boxWidth: 8, padding: 8 }
+            }
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
