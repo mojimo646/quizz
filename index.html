@@ -159,7 +159,7 @@
       "คุณมักชอบค้นหาประสบการณ์ใหม่ๆ", 
       "คุณมักผัดวันประกันพรุ่ง", 
       "คุณให้ความสำคัญกับอนาคตมากจนไม่ได้ใส่ใจสิ่งที่เกิดขึ้นในปัจจุบัน", 
-      "คุณวิตกกังวลเกี่ยวกับการถูกกันออกจากสังคมหรือบุคคลรอบนอก", 
+      "คุณวิตกกังลเกี่ยวกับการถูกกันออกจากสังคมหรือบุคคลรอบนอก", 
       "คุณไม่ชอบที่จะถูกควบคุม", 
       "คุณมีความรับผิดชอบสูง", 
       "คุณชอบที่จะเป็นผู้นำมากกว่าผู้ตาม", 
@@ -174,6 +174,18 @@
       "images/type1.png","images/type2.png","images/type3.png",
       "images/type4.png","images/type5.png","images/type6.png",
       "images/type7.png","images/type8.png","images/type9.png"
+    ];
+
+      const typeDescriptions = [
+      "ลักษณ์ 1 (ผู้แสวงหาความสมบูรณ์แบบ)",
+      "ลักษณ์ 2 (ผู้ให้)",
+      "ลักษณ์ 3 (นักแสดง)",
+      "ลักษณ์ 4 (ผู้โศกซึ้ง)",
+      "ลักษณ์ 5 (นักสังเกตการณ์)",
+      "ลักษณ์ 6 (นักปุจฉา)",
+      "ลักษณ์ 7 (ผู้เสพสุข)",
+      "ลักษณ์ 8 (เจ้านาย)",
+      "ลักษณ์ 9 (ผู้ประสานไมตรี)"
     ];
 
     // สร้างฟอร์มคำถาม
@@ -216,7 +228,7 @@
       document.getElementById("quiz-page").style.display = "none";
       document.getElementById("result-page").style.display = "block";
 
-      document.getElementById("result-text").textContent = `คุณเป็นคนลักษณ์ ${maxIndex + 1}`;
+      document.getElementById("result-text").textContent = typeDescriptions[maxIndex];
 
       document.getElementById("result-image").src = images[maxIndex];
       document.getElementById("result-image").alt = `ผลลัพธ์ประเภทที่ ${maxIndex+1}`;
@@ -253,4 +265,5 @@
   </script>
 </body>
 </html>
-
+</body>
+</html>
